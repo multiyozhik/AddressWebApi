@@ -1,7 +1,4 @@
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
-using System;
+//https://localhost:44317/api/getStandartAddress/мск сухонска 11/-89
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,18 +8,27 @@ var app = builder.Build();
 
 Configure(app);
 
-app.MapGet("/api/getStandartAddress", () => "StandartAddress");
+var baseUrl = new Uri("https://localhost:44317");
+
+var api = new StandartAddressApi(baseUrl, app.Configuration);
+
+
+app.MapGet(
+	"/api/getStandartAddress/{addressData}", async
+	(HttpContext context, string addressData) => 
+	{
+		var fullAddressDataString = await api.GetStandartAddress(addressData);
+		await context.Response.WriteAsync(fullAddressDataString);
+
+		//ToDo: проверить кодировку
+		//ToDo: сейчас возвр. json-массив, а мне надо в Address
+		//ToDo: создать AddressResponse только с нужными полями
+		//ToDo: с пом. AutoMapper конвертировать
+
+		//ToDo: по-моему, где-то в параметрах десериализации было игнорировать регистр
+	});
 
 app.Run();
-
-
-//https://localhost:44317/
-
-//app.MapGet("/getStandartAddress", (...) =>
-//{
-//    new HttpClient(), await httpClient.PostAsync(uri, addressListContent)
-//    return всю модель, потом из нее automapper преобразовать на объект с 5 полями
-//});
 
 
 static void ConfigureServices(IServiceCollection services)
