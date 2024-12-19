@@ -1,6 +1,8 @@
-# @AddressWebApi_HostAddress = http://localhost:5058
+@AddressWebApi_HostAddress = http://localhost:44317
+@address = "мск сухонска 11-89"
 
-# GET {{AddressWebApi_HostAddress}}/weatherforecast/
-# Accept: application/json
-
-# ###
+GET {{AddressWebApi_HostAddress}}/getStandartAddress/{{address}}
+Accept: application/json
+Authorization: Token 2adadfe42c3a83a7e82ed4551001b74a03a78aae
+X-Secret: f92c6652eea7a1e6c72f1afb01d030a20945cac7
+###

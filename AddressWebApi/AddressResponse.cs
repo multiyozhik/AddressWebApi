@@ -1,9 +1,5 @@
 ﻿namespace AddressWebApi
 {
-	//federal_district
-	//region_with_type - г Москва
-	//city_area":"Северо-восточный"
-	//city_district_with_type":"р-н Северное Медведково"
 	public class AddressResponse
 	{
 		public string? PostalCode { get; set; }
