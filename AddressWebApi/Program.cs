@@ -14,11 +14,9 @@ Configure(app);
 
 app.MapGet(
 	"/getStandartAddress/{addressData}", async
-	(HttpContext context, IDaDataClient client, IMapper mapper, string addressData) => 
-	{
-		var addressList = await client.GetStandartAddress(addressData);
-		var addressResponse = mapper.Map<AddressResponse>(addressList[0]);
-
+	(HttpContext context, IAddressDetailsService service, string addressData) => 
+	{		
+		var addressResponse = await service.GetAddressDetails(addressData);
 		var response = context.Response;
 		response.Headers.ContentType = "application/json";
 		await response.WriteAsJsonAsync(addressResponse);
@@ -35,6 +33,7 @@ static void ConfigureServices(IHostApplicationBuilder builder)
 	services.AddOpenApi();
 	services.AddAutoMapper(typeof(AppMappingProfile));
 	services.AddScoped<IDaDataClient, DaDataClient>();
+	services.AddScoped<IAddressDetailsService, AddressDetailsService>();
 }
 
 static void Configure(WebApplication app)
