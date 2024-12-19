@@ -1,6 +1,7 @@
 using AddressWebApi;
 using System.Text;
 using System.Text.Json;
+using AutoMapper;
 
 //https://localhost:44317/api/getStandartAddress/мск сухонска 11/-89
 
@@ -19,13 +20,15 @@ var api = new StandartAddressApi(baseUrl, app.Configuration);
 
 app.MapGet(
 	"/api/getStandartAddress/{addressData}", async
-	(HttpContext context, string addressData) => 
+	(HttpContext context, IMapper mapper, string addressData) => 
 	{
 
 		var address = await api.GetStandartAddress(addressData);
+		var addressResponse = mapper.Map<AddressResponse>(address);
+
 		var response = context.Response;
 		response.Headers.ContentType = "application/json";
-		await response.WriteAsJsonAsync(address);
+		await response.WriteAsJsonAsync(addressResponse);
 
 
 		//код ниже использовался для получения конвертером Address класса по получаемой json строке
@@ -46,6 +49,7 @@ app.Run();
 static void ConfigureServices(IServiceCollection services)
 {
 	services.AddOpenApi();
+	services.AddAutoMapper(typeof(AppMappingProfile));
 }
 
 static void Configure(WebApplication app)
