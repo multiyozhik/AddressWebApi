@@ -1,3 +1,7 @@
+using AddressWebApi;
+using System.Text;
+using System.Text.Json;
+
 //https://localhost:44317/api/getStandartAddress/мск сухонска 11/-89
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +22,13 @@ app.MapGet(
 	(HttpContext context, string addressData) => 
 	{
 		var fullAddressDataString = await api.GetStandartAddress(addressData);
-		await context.Response.WriteAsync(fullAddressDataString);
+		var response = context.Response;
+		response.Headers.ContentLanguage = "ru-RU";
+		response.Headers.ContentType = "text/plain; charset=utf-8";
+		await response.WriteAsync(fullAddressDataString, encoding: Encoding.UTF8);
 
-		//ToDo: проверить кодировку
+
 		//ToDo: сейчас возвр. json-массив, а мне надо в Address
-		//ToDo: создать AddressResponse только с нужными полями
 		//ToDo: с пом. AutoMapper конвертировать
 
 		//ToDo: по-моему, где-то в параметрах десериализации было игнорировать регистр

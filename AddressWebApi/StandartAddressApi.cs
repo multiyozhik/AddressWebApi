@@ -1,5 +1,9 @@
-﻿using Microsoft.OpenApi.Services;
+﻿using AddressWebApi;
+using Microsoft.OpenApi.Services;
+using System;
+using System.Collections;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 internal class StandartAddressApi
@@ -36,7 +40,6 @@ internal class StandartAddressApi
 		request.Content = contentList;
 
 		var response = await httpClient.SendAsync(request);
-
 		return await response.Content.ReadAsStringAsync();
 	}
 }
