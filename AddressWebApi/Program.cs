@@ -21,16 +21,22 @@ app.MapGet(
 	"/api/getStandartAddress/{addressData}", async
 	(HttpContext context, string addressData) => 
 	{
-		var fullAddressDataString = await api.GetStandartAddress(addressData);
+
+		var address = await api.GetStandartAddress(addressData);
 		var response = context.Response;
-		response.Headers.ContentLanguage = "ru-RU";
-		response.Headers.ContentType = "text/plain; charset=utf-8";
-		await response.WriteAsync(fullAddressDataString, encoding: Encoding.UTF8);
+		response.Headers.ContentType = "application/json";
+		await response.WriteAsJsonAsync(address);
 
 
-		//ToDo: сейчас возвр. json-массив, а мне надо в Address
+		//код ниже использовался для получения конвертером Address класса по получаемой json строке
+		//var fullAddressDataString = await api.GetStandartAddress(addressData);
+		//var response = context.Response;
+		//response.Headers.ContentLanguage = "ru-RU";
+		//response.Headers.ContentType = "text/plain; charset=utf-8";
+		//await response.WriteAsync(fullAddressDataString, encoding: Encoding.UTF8);
+
+
 		//ToDo: с пом. AutoMapper конвертировать
-
 		//ToDo: по-моему, где-то в параметрах десериализации было игнорировать регистр
 	});
 

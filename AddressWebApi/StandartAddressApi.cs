@@ -1,9 +1,5 @@
 ﻿using AddressWebApi;
-using Microsoft.OpenApi.Services;
-using System;
-using System.Collections;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 
 internal class StandartAddressApi
@@ -25,7 +21,7 @@ internal class StandartAddressApi
 		httpClient = new HttpClient() {  BaseAddress = baseUrl 	};
 	}
 
-	public async Task<string> GetStandartAddress(string addressData)
+	public async Task<Address> GetStandartAddress(string addressData)
 	{
 		var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl));
 
@@ -40,6 +36,11 @@ internal class StandartAddressApi
 		request.Content = contentList;
 
 		var response = await httpClient.SendAsync(request);
-		return await response.Content.ReadAsStringAsync();
+
+		var addresses = await response.Content.ReadFromJsonAsync<List<Address>>();
+		return addresses[0];
+
+
+		//return await response.Content.ReadAsStringAsync(); //исп. для возвр. json строки для конвертера Address класса
 	}
 }
