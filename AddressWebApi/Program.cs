@@ -1,20 +1,28 @@
 using AddressWebApi;
-using AutoMapper;
+using Microsoft.OpenApi.Models;
+using Serilog;
 
 //https://localhost:44317/getStandartAddress/мск сухонска 11-89
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureServices(builder);
+builder.Configuration.AddJsonFile("AddressApiConfig.json");
+
+ConfigureServices(builder.Services, builder.Configuration);
+
+builder.Host.UseSerilog((context, logConfig) => logConfig
+	.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
-Configure(app);
+Configure(app, app.Environment);
 
 
 app.MapGet(
-	"/getStandartAddress/{addressData}", async
-	(HttpContext context, IAddressDetailsService service, string addressData) => 
+	"/getStandartAddress/{addressData}", 
+	async (HttpContext context, IAddressDetailsService service, string addressData) => 
 	{		
 		var addressResponse = await service.GetAddressDetails(addressData);
 		var response = context.Response;
@@ -25,24 +33,45 @@ app.MapGet(
 app.Run();
 
 
-static void ConfigureServices(IHostApplicationBuilder builder)
+static void ConfigureServices(IServiceCollection services, IConfiguration config)
 {
-	builder.Configuration.AddJsonFile("dadata.json");
-	var services = builder.Services;
-	services.Configure<DaData>(builder.Configuration);
-	services.AddOpenApi();
+	services.Configure<AddressApiConfig>(config);
+	services.AddHttpClient();
 	services.AddAutoMapper(typeof(AppMappingProfile));
 	services.AddScoped<IDaDataClient, DaDataClient>();
 	services.AddScoped<IAddressDetailsService, AddressDetailsService>();
+
+	services.AddOpenApi();
+	services.AddEndpointsApiExplorer();
+	services.AddSwaggerGen(options =>
+	{
+		options.SwaggerDoc("v1", new OpenApiInfo
+		{
+			Version = "v1",
+			Title = "AddressWebApi",
+			Description = "An ASP.NET Core Web API to get only the required address fields"
+		});
+	});
+	services.AddCors();
 }
 
-static void Configure(WebApplication app)
+static void Configure(WebApplication app, IHostEnvironment env)
 {
-	if (app.Environment.IsDevelopment())
+	if (env.IsDevelopment())
 	{
+		app.UseDeveloperExceptionPage();
 		app.MapOpenApi();
+		app.UseSwagger(options =>
+		{
+			options.SerializeAsV2 = true;
+		});
+		app.UseSwaggerUI(options => 
+		{
+			options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+			options.RoutePrefix = string.Empty;
+		});
 	}
 
 	app.UseHttpsRedirection();
-	
+	app.UseCors(builder => builder.AllowAnyOrigin());
 }

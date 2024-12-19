@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Serilog;
 
 namespace AddressWebApi
 {
@@ -12,16 +13,22 @@ namespace AddressWebApi
 
 		private readonly IMapper mapper;
 
-		public AddressDetailsService(IDaDataClient client, IMapper mapper)
+		private readonly ILogger<AddressDetailsService> logger;
+
+		public AddressDetailsService(IDaDataClient client, IMapper mapper, ILogger<AddressDetailsService> logger)
 		{
 			this.client = client;
 			this.mapper = mapper;
+			this.logger = logger;
 		}
 
 		public async Task<AddressResponse> GetAddressDetails(string addressData)
 		{
+			logger.LogInformation($"!!! Request of details for address has been sent");
 			var addressList = await client.GetStandartAddress(addressData);
-			return mapper.Map<AddressResponse>(addressList[0]);
+			var addressResponse = mapper.Map<AddressResponse>(addressList[0]);
+			logger.LogInformation($"!!! Response was received");
+			return addressResponse;
 		}
 	}
 }

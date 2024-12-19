@@ -12,23 +12,23 @@ interface IDaDataClient
 
 class DaDataClient: IDaDataClient
 {
-	private readonly HttpClient httpClient;
+	private readonly IHttpClientFactory httpClientFactory;
 
-	private readonly DaData daData;
+	private readonly AddressApiConfig addressApiConfig;
 
-	public DaDataClient(IOptions<DaData> options)
+	public DaDataClient(IHttpClientFactory httpClientFactory, IOptions<AddressApiConfig> options)
 	{
-		daData = options.Value;
+		this.httpClientFactory = httpClientFactory;
 
-		httpClient = new HttpClient();
+		addressApiConfig = options.Value;
 	}
 
 	public async Task<List<Address>> GetStandartAddress(string addressData)
 	{
-		var request = new HttpRequestMessage(HttpMethod.Post, new Uri(daData.ApiUrl));
+		var request = new HttpRequestMessage(HttpMethod.Post, new Uri(addressApiConfig.ApiUrl));
 
-		request.Headers.Authorization = new AuthenticationHeaderValue("Token", daData.Token);
-		request.Headers.Add("X-Secret", daData.Secret);
+		request.Headers.Authorization = new AuthenticationHeaderValue("Token", addressApiConfig.Token);
+		request.Headers.Add("X-Secret", addressApiConfig.Secret);
 
 		var addressList = new List<string>() { addressData };
 		string addressListJson = JsonSerializer.Serialize(addressList);
@@ -37,6 +37,7 @@ class DaDataClient: IDaDataClient
 		contentList.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 		request.Content = contentList;
 
+		var httpClient = httpClientFactory.CreateClient();
 		var response = await httpClient.SendAsync(request);
 
 		return await response.Content.ReadFromJsonAsync<List<Address>>();
