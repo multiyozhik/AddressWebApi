@@ -57,12 +57,12 @@ static void ConfigureServices(IServiceCollection services, IConfiguration config
 
 static void Configure(WebApplication app, IHostEnvironment env)
 {
-	if (env.IsDevelopment())
-	{
-		app.UseExceptionHandler(exceptionHandlerApp	=> 
-			exceptionHandlerApp.Run(async context => 
+	app.UseExceptionHandler(exceptionHandlerApp =>
+			exceptionHandlerApp.Run(async context =>
 				await Results.Problem().ExecuteAsync(context)));
 
+	if (env.IsDevelopment())
+	{
 		app.MapOpenApi();
 		app.UseSwagger(options =>
 		{
@@ -73,11 +73,6 @@ static void Configure(WebApplication app, IHostEnvironment env)
 			options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 			options.RoutePrefix = string.Empty;
 		});
-	}
-
-	if (!app.Environment.IsDevelopment())
-	{
-		app.UseExceptionHandler("/error");
 	}
 
 	app.UseStatusCodePages();
