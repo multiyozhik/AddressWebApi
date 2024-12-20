@@ -59,7 +59,10 @@ static void Configure(WebApplication app, IHostEnvironment env)
 {
 	if (env.IsDevelopment())
 	{
-		app.UseDeveloperExceptionPage();
+		app.UseExceptionHandler(exceptionHandlerApp	=> 
+			exceptionHandlerApp.Run(async context => 
+				await Results.Problem().ExecuteAsync(context)));
+
 		app.MapOpenApi();
 		app.UseSwagger(options =>
 		{
@@ -72,6 +75,12 @@ static void Configure(WebApplication app, IHostEnvironment env)
 		});
 	}
 
+	if (!app.Environment.IsDevelopment())
+	{
+		app.UseExceptionHandler("/error");
+	}
+
+	app.UseStatusCodePages();
 	app.UseHttpsRedirection();
 	app.UseCors(builder => builder.AllowAnyOrigin());
 }

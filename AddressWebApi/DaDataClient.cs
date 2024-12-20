@@ -9,7 +9,6 @@ interface IDaDataClient
 	Task<List<Address>> GetStandartAddress(string addressData);
 }
 
-
 class DaDataClient: IDaDataClient
 {
 	private readonly IHttpClientFactory httpClientFactory;
@@ -25,6 +24,8 @@ class DaDataClient: IDaDataClient
 
 	public async Task<List<Address>> GetStandartAddress(string addressData)
 	{
+		//throw new Exception("ошибка");
+
 		var request = new HttpRequestMessage(HttpMethod.Post, new Uri(addressApiConfig.ApiUrl));
 
 		request.Headers.Authorization = new AuthenticationHeaderValue("Token", addressApiConfig.Token);
@@ -39,7 +40,7 @@ class DaDataClient: IDaDataClient
 
 		var httpClient = httpClientFactory.CreateClient();
 		var response = await httpClient.SendAsync(request);
-
+		
 		return await response.Content.ReadFromJsonAsync<List<Address>>();
 	}
 }

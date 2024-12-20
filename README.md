@@ -40,3 +40,4 @@
 4. Обработка кросс-доменных запросов CORS политика - принимаются запросы с любого адреса
 `app.UseCors(builder => builder.AllowAnyOrigin())`.
 
+5. Обработка ошибок с помощью middleware `UseExceptionHandler`.

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Serilog;
 
 namespace AddressWebApi
 {
@@ -7,6 +6,7 @@ namespace AddressWebApi
 	{
 		Task<AddressResponse> GetAddressDetails(string address);
 	}
+
 	class AddressDetailsService : IAddressDetailsService
 	{
 		private readonly IDaDataClient client;
